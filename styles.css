@@ -1,0 +1,639 @@
+
+.cbt {
+  --cbt-bg: #ffffff;
+  --cbt-ink: #16202e;
+  --cbt-line: color-mix(in srgb, var(--cbt-ink) 32%, var(--cbt-bg));
+  --cbt-hair: color-mix(in srgb, var(--cbt-ink) 16%, var(--cbt-bg));
+  --cbt-soft: color-mix(in srgb, var(--cbt-ink) 7%, var(--cbt-bg));
+  --cbt-pick: color-mix(in srgb, var(--cbt-ink) 14%, var(--cbt-bg));
+  background: var(--cbt-bg);
+  color: var(--cbt-ink);
+  border: 2px solid #1b3f7d;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 0.75rem;
+}
+
+/* --- ウィンドウのタイトル。ここだけは色を変えない（本番と同じ濃紺） --- */
+h1.cbt-titlebar {
+  background: #1b3f7d;
+  margin: 0;
+  line-height: 1.5;
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.35rem 0.7rem;
+  letter-spacing: 0.02em;
+}
+.cbt-titlebar span {
+  font-weight: 500;
+  opacity: 0.85;
+  margin-left: 0.6rem;
+}
+
+/* --- ① 受験者情報の帯 --- */
+.cbt-head {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--cbt-hair);
+  background: var(--cbt-soft);
+}
+.cbt-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-weight: 800;
+}
+.cbt-brand b {
+  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+}
+.cbt-brand span {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.cbt-id {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin: 0 0 0 auto;
+  border: 1px solid var(--cbt-line);
+  border-radius: 5px;
+  padding: 0.3rem 0.6rem;
+  background: var(--cbt-bg);
+}
+.cbt-id > div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+.cbt-id dt {
+  font-size: 0.74rem;
+  opacity: 0.75;
+}
+.cbt-id dd {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- 残り時間 --- */
+.cbt-timer {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  border: 2px solid var(--cbt-line);
+  border-radius: 5px;
+  padding: 0.2rem 0.65rem;
+  background: var(--cbt-bg);
+}
+.cbt-timer span {
+  font-size: 0.76rem;
+  opacity: 0.8;
+}
+.cbt-timer strong {
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.cbt-timer.warn {
+  border-color: #b3261e;
+  background: #fff1f0;
+  color: #8c1d18;
+}
+.cbt-timer.warn strong {
+  animation: cbt-blink 1.4s ease-in-out infinite;
+}
+@keyframes cbt-blink {
+  50% {
+    opacity: 0.45;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cbt-timer.warn strong {
+    animation: none;
+  }
+}
+
+/* --- ツールバー --- */
+.cbt-tools {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  padding: 0.45rem 0.8rem;
+  border-bottom: 1px solid var(--cbt-hair);
+  background: var(--cbt-soft);
+}
+.cbt-tool {
+  min-height: 34px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--cbt-ink);
+  background: var(--cbt-bg);
+  border: 1px solid var(--cbt-line);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.cbt-tool:hover,
+.cbt-tool.on {
+  background: var(--cbt-pick);
+}
+.cbt-zoom {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.cbt-zoom select {
+  min-height: 34px;
+  font-size: 0.85rem;
+  color: var(--cbt-ink);
+  background: var(--cbt-bg);
+  border: 1px solid var(--cbt-line);
+  border-radius: 4px;
+  padding: 0.2rem 0.4rem;
+}
+.cbt-picker {
+  position: absolute;
+  right: 0.8rem;
+  top: calc(100% + 4px);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 0.6rem;
+  background: var(--cbt-bg);
+  border: 2px solid var(--cbt-line);
+  border-radius: 6px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+.cbt-picker-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.cbt-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 4px;
+  border: 2px solid var(--cbt-line);
+  cursor: pointer;
+}
+.cbt-swatch.on {
+  outline: 3px solid var(--cbt-ink);
+  outline-offset: 1px;
+}
+.cbt-free {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.cbt-free input[type="color"] {
+  width: 40px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--cbt-line);
+  border-radius: 4px;
+  background: var(--cbt-bg);
+  cursor: pointer;
+}
+
+/* --- ② 本体。ここに表示倍率がかかる --- */
+.cbt-body {
+  padding: 1rem 1.1rem 1.2rem;
+  min-height: 22rem;
+}
+.cbt-body h2 {
+  font-size: 1.2rem;
+  margin: 0 0 0.6rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid var(--cbt-line);
+}
+.cbt-note {
+  font-size: 0.92rem;
+  line-height: 1.85;
+  margin: 0.7rem 0 0;
+  padding: 0.6rem 0.8rem;
+  background: var(--cbt-soft);
+  border-left: 4px solid var(--cbt-line);
+  border-radius: 0 4px 4px 0;
+}
+
+/* --- 下部のボタン列。本番と同じく左に戻る、右に進む --- */
+.cbt-foot {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 1.1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--cbt-hair);
+}
+.cbt-foot-fixed {
+  margin: 0;
+  padding: 0.7rem 1.1rem;
+  border-top: 1px solid var(--cbt-hair);
+  background: var(--cbt-soft);
+}
+.cbt-nav,
+.cbt-go {
+  min-height: 44px;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: 5px;
+  cursor: pointer;
+  color: var(--cbt-ink);
+  background: var(--cbt-bg);
+  border: 2px solid var(--cbt-line);
+}
+.cbt-nav:hover:not(:disabled) {
+  background: var(--cbt-pick);
+}
+.cbt-nav:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.cbt-go {
+  margin-left: auto;
+  border-width: 3px;
+  background: var(--cbt-pick);
+}
+.cbt-go:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--cbt-ink) 24%, var(--cbt-bg));
+}
+.cbt-go.ghost {
+  border-width: 2px;
+  background: var(--cbt-bg);
+}
+.cbt-go.danger {
+  border-color: #b3261e;
+  background: #b3261e;
+  color: #fff;
+}
+.cbt-go.danger:hover {
+  background: #8c1d18;
+}
+.cbt-foot > span:first-child {
+  flex: 1 1 auto;
+}
+
+/* --- 受験開始・試験開始 --- */
+.cbt-gate .field-input input {
+  background: var(--cbt-bg);
+  color: var(--cbt-ink);
+}
+.cbt-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.5rem;
+  margin: 0.8rem 0 0;
+}
+.cbt-summary > div {
+  border: 1px solid var(--cbt-line);
+  border-radius: 5px;
+  padding: 0.5rem 0.7rem;
+  background: var(--cbt-soft);
+}
+.cbt-summary dt {
+  font-size: 0.78rem;
+  opacity: 0.8;
+}
+.cbt-summary dd {
+  margin: 0.15rem 0 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+/* --- 操作説明 --- */
+.cbt-guide-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  border-bottom: 2px solid var(--cbt-line);
+  margin-bottom: 0.8rem;
+}
+.cbt-guide-head h2 {
+  border: 0;
+  margin: 0;
+  padding: 0 0 0.35rem;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.cbt-guide-page {
+  margin-left: auto;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+.cbt-guide-body {
+  border: 2px solid #b3261e;
+  border-radius: 5px;
+  padding: 0.9rem 1rem;
+  background: var(--cbt-bg);
+}
+.cbt-guide-body > p {
+  font-size: 0.98rem;
+  line-height: 1.9;
+  margin: 0 0 0.6rem;
+}
+.cbt-guide-list {
+  margin: 0;
+  padding-left: 1.5rem;
+  font-size: 0.95rem;
+  line-height: 1.95;
+}
+.cbt-guide-list li + li {
+  margin-top: 0.35rem;
+}
+
+/* --- 1問の画面 --- */
+.cbt-qhead {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--cbt-line);
+}
+.cbt-qno {
+  font-size: 1.15rem;
+  font-weight: 800;
+  padding: 0.15rem 0.7rem;
+  border: 2px solid var(--cbt-line);
+  border-radius: 4px;
+  background: var(--cbt-soft);
+  font-variant-numeric: tabular-nums;
+}
+.cbt-qfield {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+.cbt-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  margin-left: auto;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: 2px solid var(--cbt-line);
+  border-radius: 4px;
+  cursor: pointer;
+  background: var(--cbt-bg);
+}
+.cbt-flag.on {
+  background: #fff3c4;
+  border-color: #a8760a;
+  color: #6b4a05;
+}
+.cbt-flag input {
+  width: 18px;
+  height: 18px;
+  accent-color: currentColor;
+}
+.cbt-qtext {
+  font-size: 1.06rem;
+  line-height: 2;
+  margin: 0.9rem 0 1rem;
+  text-wrap: pretty;
+  word-break: auto-phrase;
+}
+.cbt-choices {
+  display: grid;
+  gap: 0.5rem;
+}
+.cbt-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--cbt-ink);
+  background: var(--cbt-bg);
+  border: 2px solid var(--cbt-line);
+  border-radius: 5px;
+  cursor: pointer;
+}
+.cbt-choice:hover {
+  background: var(--cbt-soft);
+}
+.cbt-choice.on {
+  background: var(--cbt-pick);
+  border-width: 3px;
+  padding: calc(0.6rem - 1px) calc(0.8rem - 1px);
+  box-shadow: inset 0 0 0 1px var(--cbt-ink);
+}
+.cbt-mark {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  border: 2px solid var(--cbt-line);
+  border-radius: 50%;
+  background: var(--cbt-bg);
+}
+.cbt-choice.on .cbt-mark {
+  background: var(--cbt-ink);
+  color: var(--cbt-bg);
+  border-color: var(--cbt-ink);
+}
+.cbt-choice-text {
+  flex: 1 1 auto;
+  text-wrap: pretty;
+  word-break: auto-phrase;
+}
+.cbt-state {
+  margin-top: 0.9rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+.cbt-state em {
+  font-style: normal;
+  opacity: 0.85;
+}
+.cbt-unanswered {
+  margin-left: 0.7rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 3px;
+  background: #fff1f0;
+  color: #8c1d18;
+  border: 1px solid #b3261e;
+}
+
+/* --- 解答一覧 --- */
+.cbt-legend {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin: 0.6rem 0 0.8rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+.cbt-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.55rem;
+  border: 2px solid var(--cbt-line);
+  border-radius: 4px;
+}
+.cbt-legend-item.done {
+  background: var(--cbt-pick);
+}
+.cbt-legend-item.todo {
+  background: var(--cbt-bg);
+  border-style: dashed;
+}
+/* 見直しの印は、解答済み・未解答の色を消さずに、右上の三角で重ねて示す */
+.cbt-legend-item.mark {
+  position: relative;
+  border-color: #a8760a;
+  padding-right: 1.1rem;
+}
+.cbt-legend-item.mark::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  border-width: 0 13px 13px 0;
+  border-style: solid;
+  border-color: transparent #f0b429 transparent transparent;
+}
+.cbt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+  gap: 5px;
+}
+.cbt-cell {
+  position: relative;
+  min-height: 44px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--cbt-ink);
+  border: 2px solid var(--cbt-line);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.cbt-cell.done {
+  background: var(--cbt-pick);
+}
+.cbt-cell.todo {
+  background: var(--cbt-bg);
+  border-style: dashed;
+}
+.cbt-cell.mark {
+  border-color: #a8760a;
+  border-style: solid;
+}
+.cbt-cell.mark::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  border-width: 0 13px 13px 0;
+  border-style: solid;
+  border-color: transparent #f0b429 transparent transparent;
+}
+.cbt-cell:hover {
+  outline: 3px solid var(--cbt-ink);
+  outline-offset: 1px;
+}
+.cbt-confirm {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  border: 2px solid #b3261e;
+  border-radius: 5px;
+  background: #fff5f4;
+  color: #16202e;
+}
+.cbt-confirm p {
+  margin: 0;
+  font-size: 0.97rem;
+  line-height: 1.85;
+}
+.cbt-confirm .cbt-foot {
+  border-top: 0;
+  margin-top: 0.7rem;
+  padding-top: 0;
+}
+
+/* --- 結果画面は既存の見た目のまま、CBTの枠の中に置く --- */
+.cbt-result .exam-score,
+.cbt-result .dash-panel,
+.cbt-result .notice {
+  color: #16202e;
+}
+
+/* --- 受験中は、上部のメニューを隠して他の画面へ行けないようにする（本番のCBTと同じ） --- */
+body.exam-locked .nav {
+  display: none;
+}
+body.exam-locked footer {
+  display: none;
+}
+
+/* --- せまい画面 --- */
+@media (max-width: 700px) {
+  .cbt-head {
+    gap: 0.5rem;
+  }
+  .cbt-id {
+    margin-left: 0;
+    width: 100%;
+    gap: 0.7rem;
+  }
+  .cbt-timer {
+    margin-left: auto;
+  }
+  .cbt-tools {
+    justify-content: flex-start;
+  }
+  .cbt-body {
+    padding: 0.8rem 0.7rem 1rem;
+  }
+  .cbt-go {
+    margin-left: 0;
+    width: 100%;
+  }
+  .cbt-nav {
+    flex: 1 1 auto;
+  }
+  .cbt-picker {
+    right: 0.4rem;
+    left: 0.4rem;
+  }
+}
+
+/* --- 印刷や強制配色でも読めるように --- */
+@media (forced-colors: active) {
+  .cbt-choice.on,
+  .cbt-cell.done {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+
+:root{font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#17263c;background:#eef1f4;color-scheme:light}*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}[hidden]{display:none!important}a{color:#174d7a;text-underline-offset:3px}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #b57912;outline-offset:3px}#app{max-width:1300px;margin:24px auto;padding:0 18px 40px}button.primary,.primary{border:1px solid #17365e;background:#17365e;color:white;padding:12px 18px;border-radius:6px;font-weight:700}.secondary{background:white;border:1px solid #9caab8;padding:11px 16px;border-radius:6px;color:#17263c}.entry-screen{max-width:820px;margin:5vh auto;background:#f8f9fb;border:1px solid #9baab9;border-radius:10px;overflow:hidden;box-shadow:0 12px 40px #19345312}.entry-header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:white;border-bottom:4px solid #17365e}.entry-header>div{display:flex;align-items:center;gap:12px;font-size:22px}.brand-mark{width:42px;height:42px;display:grid;place-items:center;background:#17365e;color:#ffe5a0;border-radius:5px;font:700 28px Georgia}.entry-header>span{font-size:14px;color:#48617b}.entry-card{margin:26px;padding:32px 36px;background:#fffdf4;border:1px solid #ccd3d7;border-radius:7px}.eyebrow{font-size:11px;letter-spacing:.13em;font-weight:800;color:#47627d;margin:0}.entry-card h1{font-size:clamp(26px,4vw,34px);margin:12px 0 8px;letter-spacing:.03em}.lead{font-size:14px;line-height:1.8;margin:0;color:#4c5d70}.bank-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;margin:24px 0 10px;background:#eaf0f6;border-left:4px solid #17365e}.bank-banner strong{font-size:16px}.bank-banner span{font-size:11px;color:#47627d}form label{display:block;font-weight:700;font-size:14px;margin:16px 0 5px}form input,form select{width:100%;display:block;padding:11px 12px;margin-top:7px;border:1px solid #9aabba;border-radius:5px;background:#fff;color:#17263c}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.hint{font-size:12px;color:#576677;margin:8px 0}.entry-notice{margin-top:24px;padding:16px;background:#f1f4f7;border:1px solid #d3dce3;font-size:13px;line-height:1.8}.entry-notice ul{padding-left:20px;margin:7px 0 0}.wide{width:100%;margin-top:14px}.entry-footer{text-align:center;font-size:12px;margin:22px 0 0}.error{color:#a3261b;font-size:13px;white-space:pre-wrap}.resume-box{padding:16px;margin-top:18px;background:#fff0ce;border:1px solid #dca848;font-size:13px}.resume-box button{margin:4px}.cbt{--cbt-bg:#fffdf4;--cbt-ink:#17263c;box-shadow:0 8px 30px #19345314;margin:0}.cbt-tools label{display:flex;gap:5px;align-items:center;font-size:12px}.cbt-tools button{font-size:12px;border:1px solid var(--cbt-line);padding:6px 10px;color:var(--cbt-ink);background:var(--cbt-bg);border-radius:4px}.cbt-tools input[type=color]{width:28px;height:27px;padding:0;border:1px solid var(--cbt-line)}.cbt-tools select{color:var(--cbt-ink);background:var(--cbt-bg);padding:4px}.cbt-body{min-height:450px}.q-image{width:min(100%,860px);position:relative;overflow:hidden;isolation:isolate;background:white;margin:16px auto;mix-blend-mode:multiply}.q-image img{position:absolute;width:100%;height:auto;left:0;max-width:none}.cbt[data-dark=true] .q-image{filter:invert(1);mix-blend-mode:screen}.cbt-choice-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;max-width:860px;margin:0 auto}.cbt-choice{align-items:center;justify-content:center}.cbt-qfield{flex:1}.source{font-size:12px;opacity:.75;line-height:1.7}.result-top{display:grid;grid-template-columns:1fr 1.5fr;gap:20px}.score{background:var(--cbt-soft);padding:20px;border:1px solid var(--cbt-line);border-radius:6px;text-align:center}.score strong{display:block;font-size:54px}.score small{font-size:14px}.domain-result{display:grid;grid-template-columns:135px 1fr 65px;gap:12px;align-items:center;margin:18px 0;font-size:14px}.domain-result progress{width:100%;accent-color:#17365e}.panel{padding:20px;border:1px solid var(--cbt-line);background:var(--cbt-soft);margin-top:18px;border-radius:5px}.review-item{border:1px solid var(--cbt-line);padding:12px;margin:14px 0;border-radius:5px}.review-item summary{cursor:pointer;font-weight:bold;line-height:1.8}.good{color:#196145}.bad{color:#a3261b}dialog{max-width:500px;width:calc(100% - 32px);padding:28px;border:1px solid #9aabba;border-radius:9px;box-shadow:0 20px 60px #0003}dialog::backdrop{background:#17263c88}.dialog-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:22px}.dialog-line{margin:10px 0;line-height:1.8}.cbt-foot{position:sticky;bottom:0;background:var(--cbt-bg);padding-bottom:10px;z-index:5}.notice{font-size:13px;padding:12px;background:#fff0ce;color:#6c4b12;border-left:4px solid #b57912;line-height:1.8}.admin-shell{max-width:1150px;margin:auto}.admin-shell h1{font-size:28px}.admin-card{padding:24px;background:white;border:1px solid #cad3dc;border-radius:8px;margin-bottom:20px}.admin-actions{display:flex;gap:12px;flex-wrap:wrap}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:11px;border-bottom:1px solid #d6dfe6;text-align:left;white-space:nowrap}th{background:#eaf0f6}textarea{width:100%;min-height:90px;font:14px monospace;padding:10px}.result-actions{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.stats{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:16px}.stat{padding:14px 20px;background:#eef3f8;border-radius:5px}.stat strong{display:block;font-size:24px}@media(max-width:650px){#app{padding:0 10px;margin:12px auto}.entry-screen{margin:0 auto}.entry-card{margin:14px;padding:22px 18px}.entry-header{padding:14px 18px}.entry-header>div{font-size:18px}.field-grid,.result-top{grid-template-columns:1fr;gap:0}.bank-banner{flex-direction:column;align-items:flex-start}.cbt-body{padding:14px}.cbt-id{margin-left:0}.cbt-foot{gap:6px}.cbt-foot button{font-size:12px;padding:8px}.cbt-choice-row{gap:5px}.cbt-choice{padding:8px 2px;font-size:12px;gap:4px}.cbt-mark{width:26px;height:26px}.domain-result{grid-template-columns:110px 1fr 48px;gap:6px;font-size:12px}}@media print{.cbt-tools,.result-actions,.cbt-foot,.entry-screen,dialog{display:none}.q-image{break-inside:avoid}#app{max-width:none;margin:0}.cbt{box-shadow:none}}
+.reference-bar{padding:8px 20px;background:#edf1f4;border-bottom:1px solid #c3ccd7;display:flex;align-items:center;gap:14px;flex-wrap:wrap}.reference-bar span{font-size:12px;color:#41556a}.reference-pages img{display:block;width:100%;height:auto;margin:20px 0}dialog:has(.reference-pages){width:min(1000px,96vw);max-width:1000px}dialog:has(.reference-pages) .dialog-actions{position:sticky;bottom:0;background:white;padding:14px} .reference-pages{max-height:65vh;overflow:auto}
+@media(max-width:650px){.cbt-choice-row{grid-template-columns:repeat(2,minmax(0,1fr))}.cbt-choice,.cbt-choice.on{padding:8px;gap:8px;justify-content:flex-start;min-height:52px}.cbt-choice span:last-child{white-space:nowrap}}

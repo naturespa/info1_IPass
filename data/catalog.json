@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 1,
+  "totalQuestions": 1500,
+  "exams": [
+    {
+      "id": "2026r08",
+      "label": "令和8年度",
+      "dojoId": "08_haru",
+      "strategyEnd": 34,
+      "managementEnd": 54,
+      "questionUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2026r08_ip_qs.pdf",
+      "answerUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2026r08_ip_ans.pdf",
+      "retrievedQuestionUrl": "https://itjisho.com/wp-content/uploads/2026/06/2026r08_ip_qs.pdf",
+      "retrievedAnswerUrl": "https://itjisho.com/wp-content/uploads/2026/06/2026r08_ip_ans.pdf",
+      "questionCount": 100,
+      "references": [
+        "assets/2026r08-reference-49.svg",
+        "assets/2026r08-reference-50.svg",
+        "assets/2026r08-reference-51.svg",
+        "assets/2026r08-reference-52.svg",
+        "assets/2026r08-reference-53.svg",
+        "assets/2026r08-reference-54.svg",
+        "assets/2026r08-reference-55.svg"
+      ],
+      "questionSha256": "16934af1ab515dac8756da05c7d80dec7d25afbe26bd1a20ebdf4b545922ab2e",
+      "answerSha256": "d90ff38528d7911b94a207e5a2ba31a51d8f206b827377f1f5c8cd5b76a6f4f0"
+    },
+    {
+      "id": "2025r07",
+      "label": "令和7年度",
+      "dojoId": "07_haru",
+      "strategyEnd": 35,
+      "managementEnd": 55,
+      "questionUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2025r07_ip_qs.pdf",
+      "answerUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2025r07_ip_ans.pdf",
+      "retrievedQuestionUrl": "https://itjisho.com/wp-content/uploads/2026/06/2025r07_ip_qs.pdf",
+      "retrievedAnswerUrl": "https://itjisho.com/wp-content/uploads/2026/06/2025r07_ip_ans.pdf",
+      "questionCount": 100,
+      "references": [
+        "assets/2025r07-reference-47.svg",
+        "assets/2025r07-reference-48.svg",
+        "assets/2025r07-reference-49.svg",
+        "assets/2025r07-reference-50.svg",
+        "assets/2025r07-reference-51.svg",
+        "assets/2025r07-reference-52.svg",
+        "assets/2025r07-reference-53.svg"
+      ],
+      "questionSha256": "3407e427c58b5692352d191bd5ee17a3c99feab95d38454ac19d0aef0ac16be9",
+      "answerSha256": "669c7275b4146380e1b004c560bc93092d8cad4bd33a9e371d528e97f835f0d7"
+    },
+    {
+      "id": "2024r06",
+      "label": "令和6年度",
+      "dojoId": "06_haru",
+      "strategyEnd": 35,
+      "managementEnd": 55,
+      "questionUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2024r06_ip_qs.pdf",
+      "answerUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2024r06_ip_ans.pdf",
+      "retrievedQuestionUrl": "https://itjisho.com/wp-content/uploads/2026/06/2024r06_ip_qs.pdf",
+      "retrievedAnswerUrl": "https://itjisho.com/wp-content/uploads/2026/06/2024r06_ip_ans.pdf",
+      "questionCount": 100,
+      "references": [
+        "assets/2024r06-reference-45.svg",
+        "assets/2024r06-reference-46.svg",
+        "assets/2024r06-reference-47.svg",
+        "assets/2024r06-reference-48.svg",
+        "assets/2024r06-reference-49.svg",
+        "assets/2024r06-reference-50.svg",
+        "assets/2024r06-reference-51.svg"
+      ],
+      "questionSha256": "e6771ec9506f385c5a07d22e261535ee82ff285c95cbd9ad08c4e8b941892f55",
+      "answerSha256": "8dd5c1f2a3f98228781c1cd18b1d855455091852c1bd681b4b2e932290dc20ee"
+    },
+    {
+      "id": "2023r05",
+      "label": "令和5年度",
+      "dojoId": "05_haru",
+      "strategyEnd": 35,
+      "managementEnd": 55,
+      "questionUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2023r05_ip_qs.pdf",
+      "answerUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2023r05_ip_ans.pdf",
+      "retrievedQuestionUrl": "https://itjisho.com/wp-content/uploads/2026/06/2023r05_ip_qs.pdf",
+      "retrievedAnswerUrl": "https://itjisho.com/wp-content/uploads/2026/06/2023r05_ip_ans.pdf",
+      "questionCount": 100,
+      "references": [
+        "assets/2023r05-reference-45.svg",
+        "assets/2023r05-reference-46.svg",
+        "assets/2023r05-reference-47.svg",
+        "assets/2023r05-reference-48.svg",
+        "assets/2023r05-reference-49.svg",
+        "assets/2023r05-reference-50.svg",
+        "assets/2023r05-reference-51.svg"
+      ],
+      "questionSha256": "b890d17ffd551cfd5fd4f731e70245a6ef34d0f7b2b474d4282943b5d7771eca",
+      "answerSha256": "36081a36e99b42e2394bce9ee52c4974fedac3680cccddecec9ab5bf532e0c3d"
+    },
+    {
+      "id": "2022r04",
+      "label": "令和4年度",
+      "dojoId": "04_haru",
+      "strategyEnd": 35,
+      "managementEnd": 54,
+      "questionUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2022r04_ip_qs.pdf",
+      "answerUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2022r04_ip_ans.pdf",
+      "retrievedQuestionUrl": "https://itjisho.com/wp-content/uploads/2026/06/2022r04_ip_qs.pdf",
+      "retrievedAnswerUrl": "https://itjisho.com/wp-content/uploads/2026/06/2022r04_ip_ans.pdf",
+      "questionCount": 100,
+      "references": [
+        "assets/2022r04-reference-45.svg",
+        "assets/2022r04-reference-46.svg",
+        "assets/2022r04-reference-47.svg",
+        "assets/2022r04-reference-48.svg",
+        "assets/2022r04-reference-49.svg",
+        "assets/2022r04-reference-50.svg",
+        "assets/2022r04-reference-51.svg"
+      ],
+      "questionSha256": "6749c07752a8f31378274adfce2ca267a54be6de851f450beb435b5417776026",
+      "answerSha256": "2096ec9295b2d598232547d9e19bcdb917cfa4eddad2d29917ffd283c4410ae0"
+    },
+    {
+      "id": "2021r03",
+      "label": "令和3年度",
+      "dojoId": "03_haru",
+      "strategyEnd": 35,
+      "managementEnd": 55,
+      "questionUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2021r03_ip_qs.pdf",
+      "answerUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2021r03_ip_ans.pdf",
+      "retrievedQuestionUrl": "https://itjisho.com/wp-content/uploads/2026/06/2021r03_ip_qs.pdf",
+      "retrievedAnswerUrl": "https://itjisho.com/wp-content/uploads/2026/06/2021r03_ip_ans.pdf",
+      "questionCount": 100,
+      "references": [
+        "assets/2021r03-reference-45.svg",
+        "assets/2021r03-reference-46.svg",
+        "assets/2021r03-reference-47.svg",
+        "assets/2021r03-reference-48.svg",
+        "assets/2021r03-reference-49.svg"
+      ],
+      "questionSha256": "b833b28aedafca36b128ee234cc222eef7946c9a060e5da78171d77e6a1069dc",
+      "answerSha256": "482cbcc226df4212d45d8bfdf89da1fa3044c45ce43060f6384beaf9179a2e40"
+    },
+    {
+      "id": "2020r02o",
+      "label": "令和2年度 秋期（10月）",
+      "dojoId": "02_aki",
+      "strategyEnd": 35,
+      "managementEnd": 55,
+      "questionUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2020r02o_ip_qs.pdf",
+      "answerUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2020r02o_ip_ans.pdf",
+      "retrievedQuestionUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2020-1-qs.pdf",
+      "retrievedAnswerUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2020-1-ans.pdf",
+      "questionCount": 100,
+      "references": [
+        "assets/2020r02o-reference-45.svg",
+        "assets/2020r02o-reference-46.svg",
+        "assets/2020r02o-reference-47.svg",
+        "assets/2020r02o-reference-48.svg",
+        "assets/2020r02o-reference-49.svg"
+      ],
+      "questionSha256": "2c7a77a80ca7f08509a4afc7ccc19112294323c0cfd43d23b75d12d455e4d71f",
+      "answerSha256": "a4b5be743707112c9309a0584c8607f9b3c3c8a64613098d4b69bed231200bd6"
+    },
+    {
+      "id": "2019r01a",
+      "label": "令和元年度 秋期",
+      "dojoId": "01_aki",
+      "strategyEnd": 35,
+      "managementEnd": 55,
+      "questionUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2019r01a_ip_qs.pdf",
+      "answerUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2019r01a_ip_ans.pdf",
+      "retrievedQuestionUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2019-2-qs.pdf",
+      "retrievedAnswerUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2019-2-ans.pdf",
+      "questionCount": 100,
+      "references": [
+        "assets/2019r01a-reference-43.svg",
+        "assets/2019r01a-reference-44.svg",
+        "assets/2019r01a-reference-45.svg",
+        "assets/2019r01a-reference-46.svg",
+        "assets/2019r01a-reference-47.svg"
+      ],
+      "questionSha256": "09c31e23d86b93041b54ec016055ce585ba2db9f1755836522222865e51d1b0b",
+      "answerSha256": "c5bf885dc2bab68c4ce453923bd97aa4f8686b3279f5f924b2582b80a18c0ee6"
+    },
+    {
+      "id": "2019h31h",
+      "label": "平成31年度 春期",
+      "dojoId": "31_haru",
+      "strategyEnd": 35,
+      "managementEnd": 56,
+      "questionUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2019h31h_ip_qs.pdf",
+      "answerUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2019h31h_ip_ans.pdf",
+      "retrievedQuestionUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2019-1-qs.pdf",
+      "retrievedAnswerUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2019-1-ans.pdf",
+      "questionCount": 100,
+      "references": [
+        "assets/2019h31h-reference-41.svg",
+        "assets/2019h31h-reference-42.svg",
+        "assets/2019h31h-reference-43.svg",
+        "assets/2019h31h-reference-44.svg",
+        "assets/2019h31h-reference-45.svg"
+      ],
+      "questionSha256": "e5cfb44082f89b169130134892a283e300a825cb9982cfb431aff7566389642e",
+      "answerSha256": "c466fa3665d16bb93e55c2565b860f7047e51d64dfd29020a5fdad9d0b5568c7"
+    },
+    {
+      "id": "2018h30a",
+      "label": "平成30年度 秋期",
+      "dojoId": "30_aki",
+      "strategyEnd": 35,
+      "managementEnd": 56,
+      "questionUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2018h30a_ip_qs.pdf",
+      "answerUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2018h30a_ip_ans.pdf",
+      "retrievedQuestionUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2018-2-qs.pdf",
+      "retrievedAnswerUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2018-2-ans.pdf",
+      "questionCount": 100,
+      "references": [
+        "assets/2018h30a-reference-39.svg",
+        "assets/2018h30a-reference-40.svg",
+        "assets/2018h30a-reference-41.svg",
+        "assets/2018h30a-reference-42.svg",
+        "assets/2018h30a-reference-43.svg"
+      ],
+      "questionSha256": "db480866359114f2fa8f0449fb6f5c4db1e2dfc7f5b97bbe037489f6146702b9",
+      "answerSha256": "c825326e2425b809266f600912bf1cbcc9c20a19bd6c770f39287d4e5c8d5f62"
+    },
+    {
+      "id": "2018h30h",
+      "label": "平成30年度 春期",
+      "dojoId": "30_haru",
+      "strategyEnd": 35,
+      "managementEnd": 55,
+      "questionUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2018h30h_ip_qs.pdf",
+      "answerUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2018h30h_ip_ans.pdf",
+      "retrievedQuestionUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2018-1-qs.pdf",
+      "retrievedAnswerUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2018-1-ans.pdf",
+      "questionCount": 100,
+      "references": [
+        "assets/2018h30h-reference-43.svg",
+        "assets/2018h30h-reference-44.svg",
+        "assets/2018h30h-reference-45.svg",
+        "assets/2018h30h-reference-46.svg",
+        "assets/2018h30h-reference-47.svg"
+      ],
+      "questionSha256": "9516a1f9d4c4044835b6bddc8add1afe03ea2fd9b3cea2c0dbc63969c341cb84",
+      "answerSha256": "21836546b3975ad8c86e20714629868a35a6390dc3f33be278c848ca4425d5a4"
+    },
+    {
+      "id": "2017h29a",
+      "label": "平成29年度 秋期",
+      "dojoId": "29_aki",
+      "strategyEnd": 35,
+      "managementEnd": 55,
+      "questionUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2017h29a_ip_qs.pdf",
+      "answerUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2017h29a_ip_ans.pdf",
+      "retrievedQuestionUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2017-2-qs.pdf",
+      "retrievedAnswerUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2017-2-ans.pdf",
+      "questionCount": 100,
+      "references": [
+        "assets/2017h29a-reference-40.svg",
+        "assets/2017h29a-reference-41.svg",
+        "assets/2017h29a-reference-42.svg",
+        "assets/2017h29a-reference-43.svg",
+        "assets/2017h29a-reference-44.svg"
+      ],
+      "questionSha256": "b4ce245655b5e698d95f5f77e4525bc8c1d238bc4db495fccf04a50a4a9b5ab9",
+      "answerSha256": "cffe8d1fbaee94c0628a556fe77faac90179738f4427749abd2eefdd220b3060"
+    },
+    {
+      "id": "2017h29h",
+      "label": "平成29年度 春期",
+      "dojoId": "29_haru",
+      "strategyEnd": 34,
+      "managementEnd": 54,
+      "questionUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2017h29h_ip_qs.pdf",
+      "answerUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2017h29h_ip_ans.pdf",
+      "retrievedQuestionUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2017-1-qs.pdf",
+      "retrievedAnswerUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2017-1-ans.pdf",
+      "questionCount": 100,
+      "references": [
+        "assets/2017h29h-reference-40.svg",
+        "assets/2017h29h-reference-41.svg",
+        "assets/2017h29h-reference-42.svg",
+        "assets/2017h29h-reference-43.svg",
+        "assets/2017h29h-reference-44.svg"
+      ],
+      "questionSha256": "62654e27dd05e46a50c8140c1b4bb67cb1c7ae7978f2bb52382d3cd3c503edc0",
+      "answerSha256": "d91cc26990015acd8a58e3b164cef02b51b4876927376addb0af51e1ba80ad89"
+    },
+    {
+      "id": "2016h28a",
+      "label": "平成28年度 秋期",
+      "dojoId": "28_aki",
+      "strategyEnd": 34,
+      "managementEnd": 54,
+      "questionUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2016h28a_ip_qs.pdf",
+      "answerUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2016h28a_ip_ans.pdf",
+      "retrievedQuestionUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2016-2-qs.pdf",
+      "retrievedAnswerUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2016-2-ans.pdf",
+      "questionCount": 100,
+      "references": [
+        "assets/2016h28a-reference-39.svg",
+        "assets/2016h28a-reference-40.svg",
+        "assets/2016h28a-reference-41.svg",
+        "assets/2016h28a-reference-42.svg",
+        "assets/2016h28a-reference-43.svg"
+      ],
+      "questionSha256": "6576d59a2bce43954f0627ee4d86522495b420510e0abc19bf585f1db331bff4",
+      "answerSha256": "91d57fb8c847069a0ded673bc758c8dabc58058274d558172a00abdd098236e8"
+    },
+    {
+      "id": "2016h28h",
+      "label": "平成28年度 春期",
+      "dojoId": "28_haru",
+      "strategyEnd": 34,
+      "managementEnd": 55,
+      "questionUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2016h28h_ip_qs.pdf",
+      "answerUrl": "https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/pdf/questions/2016h28h_ip_ans.pdf",
+      "retrievedQuestionUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2016-1-qs.pdf",
+      "retrievedAnswerUrl": "https://shiza-lab.com/wp-content/uploads/2025/07/ip-2016-1-ans.pdf",
+      "questionCount": 100,
+      "references": [
+        "assets/2016h28h-reference-45.svg",
+        "assets/2016h28h-reference-46.svg",
+        "assets/2016h28h-reference-47.svg",
+        "assets/2016h28h-reference-48.svg",
+        "assets/2016h28h-reference-49.svg"
+      ],
+      "questionSha256": "24abe234963ffeed42d6d8d84e55ee16015a62372642dbaf2bf99879af3376ca",
+      "answerSha256": "4912825ab5da019d9c6da8f38753b07f99e34958e01a1a91bd54dc8f6453261f"
+    }
+  ]
+}
