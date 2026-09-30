@@ -101,3 +101,5 @@ python scripts/build_bank.py --pdf-dir /path/to/pdfs
 ```
 
 `scripts/boundaries.json`は原本のページ番号（0始まり）と2倍描画時の問題開始位置です。既存の年度JSONがある場合は生成をスキップするため、再生成対象のJSONを削除してください。原本PDFはリポジトリに含めていません。
+
+公開サイト：https://naturespa.github.io/info1_IPass/
