@@ -1,5 +1,8 @@
 import {DOMAINS,normalizeName} from './core.js';
 export const MAX_ATTEMPTS=5;
+export function isChallenge(a){const mode=a.settings?.mode??a.result?.settings?.mode;return mode==='school'||mode==null;}
+export function attemptKind(a){return isChallenge(a)?'challenge':'practice';}
+export function roundLabel(a){return (isChallenge(a)?'本チャレンジ':'練習')+' 第'+a.round+'回';}
 export const STATUS_LABELS={running:'受験中',completed:'終了',abandoned:'中断終了'};
 export const isUuid=s=>typeof s==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 export function attemptsFor(records,code){return records.filter(x=>x.studentCode===code).sort((a,b)=>(a.round??999)-(b.round??999)||Date.parse(a.startedAt)-Date.parse(b.startedAt)||a.attemptId.localeCompare(b.attemptId));}
@@ -12,19 +15,21 @@ export function mergeAttempts(...sets){
  }
  const out=[...m.values()];
  for(const code of new Set(out.map(x=>x.studentCode))){
-  const a=out.filter(x=>x.studentCode===code).sort((x,y)=>Date.parse(x.startedAt)-Date.parse(y.startedAt)||x.attemptId.localeCompare(y.attemptId));
-  const used=new Set(a.filter(x=>Number.isInteger(x.round)&&x.round>0).map(x=>x.round));
-  for(const r of a)if(!Number.isInteger(r.round)||r.round<1){let n=1;while(used.has(n))n++;r.round=n;used.add(n);}
+  for(const kind of ['challenge','practice']){
+   const a=out.filter(x=>x.studentCode===code&&attemptKind(x)===kind).sort((x,y)=>Date.parse(x.startedAt)-Date.parse(y.startedAt)||(x.round??999)-(y.round??999)||x.attemptId.localeCompare(y.attemptId));
+   const stable=a.every(r=>r.kind===kind&&Number.isInteger(r.round)&&r.round>0)&&new Set(a.map(r=>r.round)).size===a.length;
+   a.forEach((r,i)=>{r.kind=kind;if(!stable)r.round=i+1;if(r.result)r.result={...r.result,round:r.round};if(r.session)r.session={...r.session,round:r.round};});
+  }
  }
  for(const r of out)if(r.status!=='running')delete r.session;
  return out;
 }
 export function attemptFromSession(s){
  const status=s.result?(s.result.abandoned?'abandoned':'completed'):'running';
- return {attemptId:s.attemptId,studentCode:s.studentCode,studentName:normalizeName(s.studentName),round:s.round,status,title:s.title,settings:s.settings,startedAt:s.startedAt,deadline:s.deadline,finishedAt:s.result?.finishedAt??null,result:s.result??null,...(status==='running'?{session:structuredClone(s)}:{})};
+ return {attemptId:s.attemptId,studentCode:s.studentCode,studentName:normalizeName(s.studentName),kind:attemptKind(s),round:s.round,status,title:s.title,settings:s.settings,startedAt:s.startedAt,deadline:s.deadline,finishedAt:s.result?.finishedAt??null,result:s.result??null,...(status==='running'?{session:structuredClone(s)}:{})};
 }
 export function comparisonKey(r){const s=r.settings??r.result?.settings??{};return JSON.stringify([s.mode??'legacy',s.count??r.result?.total,s.domain??'all',s.minutes]);}
-export function comparisonLabel(r){const s=r.settings??r.result?.settings??{};return (({school:'授業用',year:'年度別',practice:'練習'})[s.mode]??'過去の受験')+'・'+(s.count??r.result?.total??'—')+'問・'+(s.minutes??'—')+'分・'+(s.domain==='all'?'全分野':s.domain??'全分野');}
+export function comparisonLabel(r){const s=r.settings??r.result?.settings??{};return (({school:'本チャレンジ',year:'年度別練習',practice:'練習'})[s.mode]??'過去の受験')+'・'+(s.count??r.result?.total??'—')+'問・'+(s.minutes??'—')+'分・'+(s.domain==='all'?'全分野':s.domain??'全分野');}
 export function summarize(records,key){
  const complete=records.filter(x=>x.status==='completed'&&x.result).sort((a,b)=>a.round-b.round);
  const group=key??(complete.length?comparisonKey(complete.at(-1)):null);

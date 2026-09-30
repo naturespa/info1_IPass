@@ -1,5 +1,6 @@
 import {DOMAINS,domainAllocation,selectQuestions} from './core.js';
-export const DRAW_ALGORITHM='xoshiro128ss-stratified-v1';
+import {isChallenge} from './progress.js';
+export const DRAW_ALGORITHM='xoshiro128ss-stratified-v2';
 export function newSeed(){return Array.from(crypto.getRandomValues(new Uint32Array(4)),n=>n.toString(16).padStart(8,'0')).join('');}
 // Reference: https://prng.di.unimi.it/xoshiro128starstar.c (public domain)
 // xoshiro128**: reproducible shuffle, fresh browser-generated entropy for every draw.
@@ -10,7 +11,7 @@ export function drawRandom(seed,code,round){
  return ()=>{const result=Math.imul(rot(Math.imul(s[1],5),7),9)>>>0,t=s[1]<<9;s[2]^=s[0];s[3]^=s[1];s[1]^=s[2];s[0]^=s[3];s[2]^=t;s[3]=rot(s[3],11);return result/4294967296;};
 }
 export function previousQuestionIds(records){return [...new Set(records.flatMap(a=>a.result?.answers?.map(x=>x.id)??a.session?.questionIds??[]))].sort();}
-function balancedSchool(bank,count,random){
+function balancedSchool(bank,count,random,practiced=new Set()){
  const exams=[...new Set(bank.map(q=>q.examId))].sort();if(count!==75||exams.length!==15)throw new Error('授業用は全15回・75問で出題します。');
  const demands=domainAllocation(count),source=0,sink=4+exams.length,n=sink+1,edges=Array.from({length:n},()=>[]),assigned=[];
  function edge(a,b,capacity,cost){const f={to:b,rev:edges[b].length,capacity,cost},r={to:a,rev:edges[a].length,capacity:0,cost:-cost};edges[a].push(f);edges[b].push(r);return f;}
@@ -19,7 +20,8 @@ function balancedSchool(bank,count,random){
   for(let e=0;e<exams.length;e++){
    const pool=bank.filter(q=>q.domain===DOMAINS[d]&&q.examId===exams[e]),links=[];
    // Progressive costs balance each domain among years; year quotas stay exactly five.
-   for(let k=0;k<Math.min(5,pool.length);k++)links.push(edge(1+d,4+e,1,k*100+Math.floor(random()*50)));
+   const fresh=pool.filter(q=>!practiced.has(q.id)).length;
+   for(let k=0;k<Math.min(5,pool.length);k++)links.push(edge(1+d,4+e,1,k*100+Math.floor(random()*50)+(k>=fresh?10000:0)));
    assigned.push({pool,links});
   }
  }
@@ -31,13 +33,18 @@ function balancedSchool(bank,count,random){
   for(let v=sink;v!==source;){const [u,i]=parent[v],f=edges[u][i];f.capacity--;edges[v][f.rev].capacity++;v=u;}
  }
  const result=[];
- for(const {pool,links} of assigned){const need=links.filter(f=>f.capacity===0).length;for(let i=pool.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}result.push(...pool.slice(0,need));}
+ for(const {pool,links} of assigned){const need=links.filter(f=>f.capacity===0).length;for(let i=pool.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}pool.sort((a,b)=>Number(practiced.has(a.id))-Number(practiced.has(b.id)));result.push(...pool.slice(0,need));}
+ const maxOverlap=Math.floor(count*.15);let overlap=result.filter(q=>practiced.has(q.id)).length;
+ if(overlap>maxOverlap)throw new Error('練習との重複を15%以内に保つための未練習問題が不足しています。履歴を削除せず、先生に相談してください。');
+ // A little familiar material is allowed; keep year/domain counts unchanged.
+ for(let i=0;i<result.length&&overlap<maxOverlap;i++)if(!practiced.has(result[i].id)&&random()<.15){const q=result[i],candidates=bank.filter(x=>x.examId===q.examId&&x.domain===q.domain&&practiced.has(x.id)&&!result.some(r=>r.id===x.id));if(candidates.length){result[i]=candidates[Math.floor(random()*candidates.length)];overlap++;}}
  // Keep domain grouping like the official paper; randomize order within each domain.
  return DOMAINS.flatMap(domain=>{const pool=result.filter(q=>q.domain===domain);for(let i=pool.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}return pool;});
 }
 export function drawQuestions(bank,settings,{studentCode,round,records=[],seed=newSeed()}){
  if(settings.mode==='year')return {questions:selectQuestions(bank,settings),drawing:{policy:'original-paper'}};
- const excludedQuestionIds=previousQuestionIds(records),used=new Set(excludedQuestionIds),available=bank.filter(q=>!used.has(q.id)),random=drawRandom(seed,studentCode,round);
- let questions;try{questions=settings.mode==='school'?balancedSchool(available,settings.count,random):selectQuestions(available,settings,random);}catch(e){throw new Error('過去に出した問題を除くと出題できません。ランダム練習では「全15回」など範囲を広げてください。 '+e.message);}
- return {questions,drawing:{algorithm:DRAW_ALGORITHM,seed,studentCode,round,policy:settings.mode==='school'?'ipa-ratio-15-papers-no-repeat':'ipa-ratio-no-repeat',excludedQuestionIds}};
+ const excludedQuestionIds=settings.mode==='school'?previousQuestionIds(records.filter(isChallenge)):[],used=new Set(excludedQuestionIds),available=bank.filter(q=>!used.has(q.id)),random=drawRandom(seed,studentCode,round);
+ const practiced=new Set(previousQuestionIds(records.filter(a=>!isChallenge(a))));
+ let questions;try{questions=settings.mode==='school'?balancedSchool(available,settings.count,random,practiced):selectQuestions(available,settings,random);}catch(e){throw new Error('出題できません。 '+e.message);}
+ return {questions,drawing:{algorithm:DRAW_ALGORITHM,seed,studentCode,round,policy:settings.mode==='school'?'ipa-ratio-15-papers-no-repeat-practice-overlap15':'unlimited-practice',excludedQuestionIds,...(settings.mode==='school'?{maxPracticeOverlap:Math.floor(settings.count*.15),practiceOverlapQuestionIds:questions.filter(q=>practiced.has(q.id)).map(q=>q.id)}:{})}};
 }

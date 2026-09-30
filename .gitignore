@@ -3,3 +3,4 @@ local-server/storage/
 *.log
 __pycache__/
 *.pyc
+**/meibo.csv

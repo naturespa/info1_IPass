@@ -1,6 +1,7 @@
 import http from 'node:http';
 import {randomUUID} from 'node:crypto';
 import {validateSubmission} from '../submission-validation.js';
+import {readRosterFile} from './roster-file.mjs';
 import {DatabaseSync} from 'node:sqlite';
 import {readFile,mkdir} from 'node:fs/promises';
 import path from 'node:path';
@@ -8,6 +9,7 @@ import {fileURLToPath} from 'node:url';
 import {grade,validStudent} from '../core.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),port=Number(process.env.PORT||3000);
 const storage=process.env.STORAGE_DIR||path.join(root,'local-server','storage');await mkdir(storage,{recursive:true});
+const rosterFile=process.env.ROSTER_CSV_PATH||(process.platform==='win32'?'C:\\cbt\\meibo.csv':path.join(root,'local-server','meibo.csv'));
 const db=new DatabaseSync(path.join(storage,'ipass.sqlite'));db.exec('PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS results (attempt_id TEXT PRIMARY KEY, student_code TEXT NOT NULL, student_name TEXT NOT NULL, finished_at TEXT NOT NULL, result_json TEXT NOT NULL);');
 db.exec('CREATE TABLE IF NOT EXISTS submissions (receipt_id TEXT PRIMARY KEY, student_code TEXT NOT NULL, received_at TEXT NOT NULL, packet_json TEXT NOT NULL);');
 const catalog=JSON.parse(await readFile(path.join(root,'data/catalog.json'),'utf8'));const bank=new Map();
@@ -17,7 +19,7 @@ const server=http.createServer(async(req,res)=>{
  res.setHeader('X-Content-Type-Options','nosniff');const reply=(status,value)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
  try{
   const u=new URL(req.url,'http://localhost');const pathname=decodeURIComponent(u.pathname);
-  if(pathname.startsWith('/api/admin/')||pathname==='/admin.html'||pathname==='/admin.js'){
+  if(pathname.startsWith('/api/admin/')||pathname==='/admin.html'||pathname==='/admin.js'||pathname==='/compare.html'||pathname==='/compare.js'){
    const local=['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress)&&/^(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/.test(req.headers.host||'');
    if(!local)return reply(403,{error:'管理画面はサーバPCでのみ利用できます。'});
    if(req.headers.origin&&req.headers.origin!==`http://${req.headers.host}`)return reply(403,{error:'Invalid origin'});
@@ -33,6 +35,9 @@ const server=http.createServer(async(req,res)=>{
    const receiptId=randomUUID(),receivedAt=new Date().toISOString();
    db.exec('BEGIN');try{db.prepare('INSERT INTO submissions VALUES (?,?,?,?)').run(receiptId,p.studentCode,receivedAt,JSON.stringify(p));for(const r of results){const old=db.prepare('SELECT student_code,student_name FROM results WHERE attempt_id=?').get(r.attemptId);if(old&&(old.student_code!==r.studentCode||old.student_name!==r.studentName))throw new Error('受験IDが他の受験者と重複しています。');db.prepare('INSERT OR IGNORE INTO results VALUES (?,?,?,?,?)').run(r.attemptId,r.studentCode,r.studentName,r.finishedAt,JSON.stringify(r));}db.exec('COMMIT');}catch(e){db.exec('ROLLBACK');return reply(400,{error:e.message});}
    return reply(200,{ok:true,studentCode:p.studentCode,receiptId,receivedAt});
+  }
+  if(pathname==='/api/admin/roster-file'&&req.method==='GET'){
+   try{const data=await readRosterFile(rosterFile);if(u.searchParams.has('fileHash')&&u.searchParams.get('fileHash')!==data.fileHash)return reply(409,{error:'確認後に meibo.csv が変わりました。名簿を再確認してください。'});return reply(200,data);}catch(e){return reply(400,{error:e.message});}
   }
   if(pathname==='/api/admin/results'&&req.method==='GET'){return reply(200,db.prepare('SELECT result_json FROM results ORDER BY finished_at DESC').all().map(r=>JSON.parse(r.result_json)));}
   if(pathname==='/api/results'&&req.method==='POST'){
