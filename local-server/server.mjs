@@ -30,7 +30,7 @@ const server=http.createServer(async(req,res)=>{
  res.setHeader('X-Content-Type-Options','nosniff');const reply=(status,value)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
  try{
   const u=new URL(req.url,'http://localhost');const pathname=decodeURIComponent(u.pathname);
-  if(pathname.startsWith('/api/admin/')||pathname==='/admin.html'||pathname==='/admin.js'||pathname==='/compare.html'||pathname==='/compare.js'||pathname==='/analytics.html'||pathname==='/analytics.js'){
+  if(pathname.startsWith('/api/admin/')||pathname==='/admin.html'||pathname==='/admin.js'||pathname==='/compare.html'||pathname==='/compare.js'||pathname==='/analytics.html'||pathname==='/analytics.js'||pathname==='/aspect-review.html'||pathname==='/aspect-review.js'){
    const local=['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress)&&/^(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/.test(req.headers.host||'');
    if(!local)return reply(403,{error:'管理画面はサーバPCでのみ利用できます。'});
    if(req.headers.origin&&req.headers.origin!==`http://${req.headers.host}`)return reply(403,{error:'Invalid origin'});

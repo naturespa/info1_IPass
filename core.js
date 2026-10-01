@@ -1,3 +1,4 @@
+import {aspectScores} from './assessment.js';
 export const DOMAINS = ['ストラテジ系','マネジメント系','テクノロジ系'];
 export const LABELS = ['ア','イ','ウ','エ'];
 export const IPA_WEIGHTS = [35,20,45];
@@ -29,9 +30,9 @@ export function selectQuestions(bank,{mode,domain='all',count=35},random=Math.ra
  return shuffle(filtered,random).slice(0,count);
 }
 export function grade(questions,answers) {
- const rows=questions.map(q=>({id:q.id,examId:q.examId,number:q.number,domain:q.domain,source:q.source,picked:Number.isInteger(answers[q.id])&&answers[q.id]>=0&&answers[q.id]<4?answers[q.id]:-1,correctAnswer:q.answer,correct:answers[q.id]===q.answer}));
+ const rows=questions.map(q=>({id:q.id,examId:q.examId,number:q.number,domain:q.domain,source:q.source,aspect:q.aspect??null,picked:Number.isInteger(answers[q.id])&&answers[q.id]>=0&&answers[q.id]<4?answers[q.id]:-1,correctAnswer:q.answer,correct:answers[q.id]===q.answer}));
  const correct=rows.filter(r=>r.correct).length;
- return {correct,total:rows.length,score:Math.round(correct/rows.length*100),byDomain:DOMAINS.map(domain=>{const a=rows.filter(r=>r.domain===domain),c=a.filter(r=>r.correct).length;return {domain,correct:c,total:a.length,rate:a.length?Math.round(c/a.length*100):null};}),answers:rows};
+ return {byAspect:aspectScores(rows),correct,total:rows.length,score:Math.round(correct/rows.length*100),byDomain:DOMAINS.map(domain=>{const a=rows.filter(r=>r.domain===domain),c=a.filter(r=>r.correct).length;return {domain,correct:c,total:a.length,rate:a.length?Math.round(c/a.length*100):null};}),answers:rows};
 }
 export function advice(result) {
  const present=result.byDomain.filter(r=>r.total>0).sort((a,b)=>a.rate-b.rate);
