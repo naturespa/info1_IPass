@@ -4,7 +4,7 @@ test('学校サーバ：再提出・取消し署名・報告・バックアッ�
  const dir=await mkdtemp(path.join(tmpdir(),'ipass-test-'));await writeFile(path.join(dir,'meibo.csv'),'受験番号,氏名\n1101,岡田 太郎\n0002,佐藤 花子');const child=spawn(process.execPath,['local-server/server.mjs'],{cwd:new URL('..',import.meta.url),env:{...process.env,PORT:'0',STORAGE_DIR:dir,ROSTER_CSV_PATH:path.join(dir,'meibo.csv')},stdio:['ignore','pipe','pipe']});let logs='';child.stderr.on('data',b=>logs+=b);const url=await new Promise((resolve,reject)=>{let out='';const timer=setTimeout(()=>reject(new Error('server timeout '+logs)),10000);child.stdout.on('data',b=>{out+=b;const match=out.match(/http:\/\/localhost:(\d+)\//);if(match&&+match[1]){clearTimeout(timer);resolve('http://localhost:'+match[1]);}});child.once('exit',()=>{clearTimeout(timer);reject(new Error(logs));});});t.after(async()=>{child.kill();await new Promise(r=>child.once('exit',r));await rm(dir,{recursive:true,force:true});});
  let cookie='';const call=async(route,body)=>{const headers={...(cookie?{Cookie:cookie}:{}),...(body?{'Content-Type':'application/json'}:{})};const resp=await fetch(url+route,{headers,...(body?{method:'POST',body:JSON.stringify(body)}:{})});const session=resp.headers.get('set-cookie');if(session)cookie=session.split(';')[0];return {status:resp.status,data:await resp.json()};};
  assert.equal((await call('/api/admin/results')).status,401);
- for(const page of ['admin','analytics','compare','audit','aspect-review'])assert.equal((await fetch(url+'/'+page+'.html',{redirect:'manual'})).status,303);
+ for(const page of ['admin','analytics','compare','audit','aspect-review','statistics'])assert.equal((await fetch(url+'/'+page+'.html',{redirect:'manual'})).status,303);
  assert.equal((await fetch(url+'/%2fadmin.html',{redirect:'manual'})).status,303);
  assert.equal((await fetch(url+'/admin.js')).status,401);
  assert.equal((await call('/api/teacher-auth/status')).data.configured,false);
@@ -13,6 +13,7 @@ test('学校サーバ：再提出・取消し署名・報告・バックアッ�
  assert.equal((await call('/api/teacher-auth/setup',{password:'integration-test-password'})).status,200);
  assert.equal((await call('/api/teacher-auth/status')).data.authenticated,true);
  assert.equal((await fetch(url+'/admin.html',{headers:{Cookie:cookie}})).status,200);
+ assert.equal((await fetch(url+'/statistics.html',{headers:{Cookie:cookie}})).status,200);assert.equal((await fetch(url+'/statistics.js')).status,401);assert.equal((await fetch(url+'/statistics.js',{headers:{Cookie:cookie}})).status,200);
  const roster=await call('/api/admin/roster-file');assert.equal(roster.status,200);assert.equal(roster.data.rows.length,2);assert.equal(roster.data.rows[1].code,'0002');
  assert.equal((await call('/api/teacher-auth/setup',{password:'replacement-password'})).status,400);
 

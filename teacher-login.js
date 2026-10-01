@@ -1,6 +1,6 @@
 const $=id=>document.getElementById(id);
 let mode='login';
-const allowed=new Set(['/admin.html','/compare.html','/analytics.html','/aspect-review.html','/audit.html']);
+const allowed=new Set(['/admin.html','/compare.html','/analytics.html','/aspect-review.html','/audit.html','/statistics.html']);
 const next=new URLSearchParams(location.search).get('next'),destination=allowed.has(next)?next:'admin.html';
 const message=s=>$('login-message').textContent=s;
 async function post(action,body){const r=await fetch('api/teacher-auth/'+action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),credentials:'same-origin',cache:'no-store'}),data=await r.json();if(!r.ok)throw new Error(data.error||'認証に失敗しました。');return data;}

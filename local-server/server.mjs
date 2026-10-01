@@ -22,8 +22,8 @@ if(!db.prepare('SELECT value FROM settings WHERE key=?').get('correction-key'))d
 const correctionKey=()=>db.prepare('SELECT value FROM settings WHERE key=?').get('correction-key').value;
 if(process.argv.includes('--reset-teacher-password'))db.prepare('DELETE FROM settings WHERE key=?').run('teacher-password');
 const teacherAuth=createTeacherAuth(db);
-const teacherPages=new Set(['/admin.html','/compare.html','/analytics.html','/aspect-review.html','/audit.html']);
-const teacherScripts=new Set(['/admin.js','/compare.js','/analytics.js','/aspect-review.js','/audit.js']);
+const teacherPages=new Set(['/admin.html','/compare.html','/analytics.html','/aspect-review.html','/audit.html','/statistics.html']);
+const teacherScripts=new Set(['/admin.js','/compare.js','/analytics.js','/aspect-review.js','/audit.js','/statistics.js']);
 const digest=p=>createHash('sha256').update(JSON.stringify({studentCode:p.studentCode,studentName:normalizeName(p.studentName),attempts:[...p.attempts].sort((a,b)=>a.attemptId.localeCompare(b.attemptId)),reports:[...(p.reports??[])].sort((a,b)=>a.reportId.localeCompare(b.reportId))})).digest('hex');
 async function jsonBody(req,max=5*1024*1024){let bytes=0,chunks=[];for await(const c of req){bytes+=c.length;if(bytes>max)throw new Error('ファイルが大きすぎます。');chunks.push(c);}return JSON.parse(Buffer.concat(chunks).toString('utf8'));}
 function checkedReport(r,code){if(!r||!isUuid(r.reportId)||r.studentCode!==code||!validStudent(r.studentCode,r.studentName)||!bank.has(r.questionId)||!isUuid(r.attemptId)||typeof r.kind!=='string'||r.kind.length>100||typeof r.text!=='string'||!r.text.trim()||r.text.length>1000||!Number.isFinite(Date.parse(r.createdAt)))throw new Error('問題報告の形式が不正です。');return r;}
