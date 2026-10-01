@@ -13,7 +13,7 @@ import {fileURLToPath} from 'node:url';
 import {grade,validStudent} from '../core.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),port=Number(process.env.PORT||3000);
 const storage=process.env.STORAGE_DIR||path.join(root,'local-server','storage');await mkdir(storage,{recursive:true});
-const rosterFile=process.env.ROSTER_CSV_PATH||(process.platform==='win32'?'C:\\cbt\\meibo.csv':path.join(root,'local-server','meibo.csv'));
+const rosterFile=process.env.ROSTER_CSV_PATH||path.join(root,'meibo.csv');
 const db=new DatabaseSync(path.join(storage,'ipass.sqlite'));db.exec('PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS results (attempt_id TEXT PRIMARY KEY, student_code TEXT NOT NULL, student_name TEXT NOT NULL, finished_at TEXT NOT NULL, result_json TEXT NOT NULL);');
 db.exec('CREATE TABLE IF NOT EXISTS submissions (receipt_id TEXT PRIMARY KEY, student_code TEXT NOT NULL, received_at TEXT NOT NULL, packet_json TEXT NOT NULL);');
 if(!db.prepare('PRAGMA table_info(submissions)').all().some(c=>c.name==='packet_hash'))db.exec('ALTER TABLE submissions ADD COLUMN packet_hash TEXT');
