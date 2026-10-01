@@ -1,4 +1,5 @@
 import {issueCorrection,verifyCorrection} from './correction-auth.mjs';
+import {createTeacherAuth} from './teacher-auth.mjs';
 import {normalizeName} from '../core.js';
 import {isUuid,isCancelled} from '../progress.js';
 import http from 'node:http';
@@ -19,6 +20,10 @@ if(!db.prepare('PRAGMA table_info(submissions)').all().some(c=>c.name==='packet_
 db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS submissions_hash ON submissions(packet_hash); CREATE TABLE IF NOT EXISTS reports (report_id TEXT PRIMARY KEY, report_json TEXT NOT NULL, status TEXT NOT NULL); CREATE TABLE IF NOT EXISTS corrections (correction_id TEXT PRIMARY KEY, token_json TEXT NOT NULL); CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY,value TEXT NOT NULL);`);
 if(!db.prepare('SELECT value FROM settings WHERE key=?').get('correction-key'))db.prepare('INSERT INTO settings VALUES (?,?)').run('correction-key',randomBytes(32).toString('hex'));
 const correctionKey=()=>db.prepare('SELECT value FROM settings WHERE key=?').get('correction-key').value;
+if(process.argv.includes('--reset-teacher-password'))db.prepare('DELETE FROM settings WHERE key=?').run('teacher-password');
+const teacherAuth=createTeacherAuth(db);
+const teacherPages=new Set(['/admin.html','/compare.html','/analytics.html','/aspect-review.html','/audit.html']);
+const teacherScripts=new Set(['/admin.js','/compare.js','/analytics.js','/aspect-review.js','/audit.js']);
 const digest=p=>createHash('sha256').update(JSON.stringify({studentCode:p.studentCode,studentName:normalizeName(p.studentName),attempts:[...p.attempts].sort((a,b)=>a.attemptId.localeCompare(b.attemptId)),reports:[...(p.reports??[])].sort((a,b)=>a.reportId.localeCompare(b.reportId))})).digest('hex');
 async function jsonBody(req,max=5*1024*1024){let bytes=0,chunks=[];for await(const c of req){bytes+=c.length;if(bytes>max)throw new Error('ファイルが大きすぎます。');chunks.push(c);}return JSON.parse(Buffer.concat(chunks).toString('utf8'));}
 function checkedReport(r,code){if(!r||!isUuid(r.reportId)||r.studentCode!==code||!validStudent(r.studentCode,r.studentName)||!bank.has(r.questionId)||!isUuid(r.attemptId)||typeof r.kind!=='string'||r.kind.length>100||typeof r.text!=='string'||!r.text.trim()||r.text.length>1000||!Number.isFinite(Date.parse(r.createdAt)))throw new Error('問題報告の形式が不正です。');return r;}
@@ -29,11 +34,29 @@ const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=
 const server=http.createServer(async(req,res)=>{
  res.setHeader('X-Content-Type-Options','nosniff');const reply=(status,value)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
  try{
-  const u=new URL(req.url,'http://localhost');const pathname=decodeURIComponent(u.pathname);
-  if(pathname.startsWith('/api/admin/')||pathname==='/admin.html'||pathname==='/admin.js'||pathname==='/compare.html'||pathname==='/compare.js'||pathname==='/analytics.html'||pathname==='/analytics.js'||pathname==='/aspect-review.html'||pathname==='/aspect-review.js'){
+  const u=new URL(req.url,'http://localhost'),decoded=decodeURIComponent(u.pathname);if(decoded.includes('\\')||decoded.includes('\0'))return reply(400,{error:'Invalid path'});const pathname=path.posix.normalize(decoded);
+  if(pathname.startsWith('/api/admin/')||pathname.startsWith('/api/teacher-auth/')||teacherPages.has(pathname)||teacherScripts.has(pathname)){
    const local=['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress)&&/^(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/.test(req.headers.host||'');
    if(!local)return reply(403,{error:'管理画面はサーバPCでのみ利用できます。'});
    if(req.headers.origin&&req.headers.origin!==`http://${req.headers.host}`)return reply(403,{error:'Invalid origin'});
+   res.setHeader('Cache-Control','no-store');
+   if(!pathname.startsWith('/api/teacher-auth/')&&!teacherAuth.authenticated(req)){
+    if(teacherPages.has(pathname)){res.writeHead(303,{Location:'/teacher-login.html?next='+encodeURIComponent(pathname)});return res.end();}
+    return reply(401,{error:'教員パスワードでログインしてください。'});
+   }
+  }
+  if(pathname.startsWith('/api/teacher-auth/')){
+   if(pathname==='/api/teacher-auth/status'&&req.method==='GET')return reply(200,teacherAuth.status(req));
+   if(req.method!=='POST')return reply(405,{error:'POST required'});
+   try{
+    const b=await jsonBody(req,4000);
+    if(pathname==='/api/teacher-auth/setup')await teacherAuth.setup(b.password,res);
+    else if(pathname==='/api/teacher-auth/login')await teacherAuth.login(b.password,res);
+    else if(pathname==='/api/teacher-auth/change')await teacherAuth.change(req,b.currentPassword,b.password,res);
+    else if(pathname==='/api/teacher-auth/logout')teacherAuth.logout(req,res);
+    else return reply(404,{error:'Not found'});
+    return reply(200,{ok:true});
+   }catch(e){return reply(e.status??400,{error:e.message});}
   }
   if(['/api/submissions','/api/corrections/verify'].includes(pathname)){
    const origin=req.headers.origin,allowed=origin===`http://${req.headers.host}`||origin==='https://naturespa.github.io';
@@ -78,7 +101,7 @@ const server=http.createServer(async(req,res)=>{
   const file=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));const relative=path.relative(root,file);
   if(relative.startsWith('..')||path.isAbsolute(relative)||relative.split(path.sep).some(p=>p.startsWith('.'))||relative.startsWith('local-server')||relative.startsWith('scripts')||relative.startsWith('tests'))return reply(403,{error:'Forbidden'});
   const ext=path.extname(file);if(!types[ext])return reply(403,{error:'Forbidden'});
-  const content=await readFile(file);res.writeHead(200,{'Content-Type':types[ext],'Cache-Control':ext==='.html'?'no-cache':'public, max-age=300'});res.end(req.method==='HEAD'?undefined:content);
+  const content=await readFile(file);res.writeHead(200,{'Content-Type':types[ext],'Cache-Control':teacherPages.has(pathname)||teacherScripts.has(pathname)?'no-store':ext==='.html'?'no-cache':'public, max-age=300'});res.end(req.method==='HEAD'?undefined:content);
  }catch(e){if(e.code==='ENOENT')return reply(404,{error:'Not found'});console.error(e.name,e.message);reply(500,{error:'Server error'});}
 });
 server.listen(port,'0.0.0.0',()=>console.log(`確認用画面 http://localhost:${server.address().port}/\n管理画面 http://localhost:${server.address().port}/admin.html\n提出先は http://学校サーバIP:${port}/api/submissions です。受験管理はブラウザ側で行います。`));

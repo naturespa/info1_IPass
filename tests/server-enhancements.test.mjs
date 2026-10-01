@@ -2,7 +2,19 @@ import test from 'node:test';import assert from 'node:assert/strict';import {spa
 const id=n=>`10000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
 test('学校サーバ：再提出・取消し署名・報告・バックアップ復元を実通信で確認',async t=>{
  const dir=await mkdtemp(path.join(tmpdir(),'ipass-test-')),child=spawn(process.execPath,['local-server/server.mjs'],{cwd:new URL('..',import.meta.url),env:{...process.env,PORT:'0',STORAGE_DIR:dir},stdio:['ignore','pipe','pipe']});let logs='';child.stderr.on('data',b=>logs+=b);const url=await new Promise((resolve,reject)=>{let out='';const timer=setTimeout(()=>reject(new Error('server timeout '+logs)),10000);child.stdout.on('data',b=>{out+=b;const match=out.match(/http:\/\/localhost:(\d+)\//);if(match&&+match[1]){clearTimeout(timer);resolve('http://localhost:'+match[1]);}});child.once('exit',()=>{clearTimeout(timer);reject(new Error(logs));});});t.after(async()=>{child.kill();await new Promise(r=>child.once('exit',r));await rm(dir,{recursive:true,force:true});});
- const call=async(route,body)=>{const resp=await fetch(url+route,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});return {status:resp.status,data:await resp.json()};};
+ let cookie='';const call=async(route,body)=>{const headers={...(cookie?{Cookie:cookie}:{}),...(body?{'Content-Type':'application/json'}:{})};const resp=await fetch(url+route,{headers,...(body?{method:'POST',body:JSON.stringify(body)}:{})});const session=resp.headers.get('set-cookie');if(session)cookie=session.split(';')[0];return {status:resp.status,data:await resp.json()};};
+ assert.equal((await call('/api/admin/results')).status,401);
+ for(const page of ['admin','analytics','compare','audit','aspect-review'])assert.equal((await fetch(url+'/'+page+'.html',{redirect:'manual'})).status,303);
+ assert.equal((await fetch(url+'/%2fadmin.html',{redirect:'manual'})).status,303);
+ assert.equal((await fetch(url+'/admin.js')).status,401);
+ assert.equal((await call('/api/teacher-auth/status')).data.configured,false);
+ assert.equal((await call('/api/teacher-auth/setup',{password:'short'})).status,400);
+ assert.equal((await fetch(url+'/api/teacher-auth/setup',{method:'POST',headers:{Origin:'https://example.com','Content-Type':'application/json'},body:JSON.stringify({password:'integration-test-password'})})).status,403);
+ assert.equal((await call('/api/teacher-auth/setup',{password:'integration-test-password'})).status,200);
+ assert.equal((await call('/api/teacher-auth/status')).data.authenticated,true);
+ assert.equal((await fetch(url+'/admin.html',{headers:{Cookie:cookie}})).status,200);
+ assert.equal((await call('/api/teacher-auth/setup',{password:'replacement-password'})).status,400);
+
  const catalog=JSON.parse(await readFile(new URL('../data/catalog.json',import.meta.url))),bank=JSON.parse(await readFile(new URL('../data/'+catalog.exams[0].id+'.json',import.meta.url))).questions.slice(0,2),base={app:'info1_IPass',schemaVersion:1,studentCode:'1101',studentName:'岡田 太郎',attemptId:id(1),round:1,title:'test',settings:{mode:'school',count:2,minutes:45,domain:'all'},startedAt:'2026-10-01T00:00:00Z',finishedAt:'2026-10-01T00:01:00Z',...grade(bank,{[bank[0].id]:bank[0].answer})},attempt={...base,kind:'challenge',status:'completed',result:base},report={reportId:id(10),studentCode:base.studentCode,studentName:base.studentName,questionId:bank[0].id,attemptId:base.attemptId,kind:'図表',text:'点検してください',createdAt:base.finishedAt},packet={app:'info1_IPass',kind:'progress',schemaVersion:2,studentCode:base.studentCode,studentName:base.studentName,exportedAt:base.finishedAt,attempts:[attempt],reports:[report]};
  const first=await call('/api/submissions',packet);assert.equal(first.status,200);const second=await call('/api/submissions',{...packet,exportedAt:'2026-10-02T00:00:00Z'});assert.equal(second.data.receiptId,first.data.receiptId);assert.equal(second.data.duplicate,true);assert.equal((await call('/api/admin/results')).data.length,1);assert.equal((await call('/api/admin/reports')).data.length,1);
  const conflict=structuredClone(packet);conflict.attempts[0].result.answers[0].picked=(bank[0].answer+1)%4;assert.equal((await call('/api/submissions',conflict)).status,400);
@@ -11,5 +23,11 @@ test('学校サーバ：再提出・取消し署名・報告・バックアッ�
  assert.equal((await call('/api/admin/reports',{reportId:report.reportId,status:'対応済み'})).status,200);
  const backup=await call('/api/admin/backup');assert.equal(backup.status,200);assert.equal(backup.data.submissions.length,2);assert.equal(backup.data.corrections.length,1);assert.equal((await call('/api/admin/restore',backup.data)).status,200);assert.equal((await call('/api/admin/reports')).data[0].status,'対応済み');assert.equal((await call('/api/submissions',cancelled)).data.duplicate,true);
  const invalid=structuredClone(backup.data);invalid.results[0].answers[0].id='invalid';assert.equal((await call('/api/admin/restore',invalid)).status,400);assert.equal((await call('/api/admin/results')).data.length,1);
+ assert.equal((await call('/api/teacher-auth/change',{currentPassword:'wrong',password:'new-integration-password'})).status,400);
+ const previousCookie=cookie;assert.equal((await call('/api/teacher-auth/change',{currentPassword:'integration-test-password',password:'new-integration-password'})).status,200);
+ assert.equal((await fetch(url+'/api/admin/results',{headers:{Cookie:previousCookie}})).status,401);
+ assert.equal((await call('/api/teacher-auth/logout',{})).status,200);assert.equal((await call('/api/admin/results')).status,401);
+ assert.equal((await call('/api/teacher-auth/login',{password:'integration-test-password'})).status,400);
+ assert.equal((await call('/api/teacher-auth/login',{password:'new-integration-password'})).status,200);
  const blocked=await fetch(url+'/api/admin/backup',{headers:{Origin:'https://example.com'}});assert.equal(blocked.status,403);
 });
