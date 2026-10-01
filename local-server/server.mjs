@@ -1,5 +1,6 @@
 import {issueCorrection,verifyCorrection} from './correction-auth.mjs';
 import {createTeacherAuth} from './teacher-auth.mjs';
+import {startupMessage} from './network-addresses.mjs';
 import {normalizeName} from '../core.js';
 import {isUuid,isCancelled} from '../progress.js';
 import http from 'node:http';
@@ -104,4 +105,4 @@ const server=http.createServer(async(req,res)=>{
   const content=await readFile(file);res.writeHead(200,{'Content-Type':types[ext],'Cache-Control':teacherPages.has(pathname)||teacherScripts.has(pathname)?'no-store':ext==='.html'?'no-cache':'public, max-age=300'});res.end(req.method==='HEAD'?undefined:content);
  }catch(e){if(e.code==='ENOENT')return reply(404,{error:'Not found'});console.error(e.name,e.message);reply(500,{error:'Server error'});}
 });
-server.listen(port,'0.0.0.0',()=>console.log(`確認用画面 http://localhost:${server.address().port}/\n管理画面 http://localhost:${server.address().port}/admin.html\n提出先は http://学校サーバIP:${port}/api/submissions です。受験管理はブラウザ側で行います。`));
+server.listen(port,'0.0.0.0',()=>console.log(startupMessage({port:server.address().port,storage,rosterFile})));
