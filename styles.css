@@ -661,3 +661,14 @@ body.exam-locked footer {
 .cbt-guide-body>.cbt-note{margin:16px 0 0}
 #save-state{margin:0 auto 24px;width:calc(100% - 36px)}
 @media(max-width:650px){.cbt-guide-sections{grid-template-columns:1fr;gap:14px}#save-state{width:calc(100% - 20px)}}
+
+/* 提出先と受付結果を横並びにし、実際の受付成功だけを緑色で示す。 */
+.submission-layout{display:grid;grid-template-columns:minmax(240px,360px) minmax(0,1fr);gap:20px;align-items:start;margin-top:20px}
+.submission-layout .submit-field{margin:0;max-width:none}
+.submission-feedback{min-width:0}
+.submission-feedback #status-message{margin:0 0 10px;padding:10px 12px;border-radius:6px}
+.submission-feedback #status-message:empty{display:none}
+.submission-feedback #status-message[data-tone=success]{background:#e7f5eb;border:1px solid #6ba880;color:#14532d;font-weight:700}
+.submission-history{margin:0;line-height:1.8;overflow-wrap:anywhere}
+.submission-success-badge{display:inline-block;margin:0 8px 4px 0;padding:3px 9px;border-radius:5px;background:#dcfce7;color:#14532d;border:1px solid #86b99a;font-size:13px;font-weight:700}
+@media(max-width:700px){.submission-layout{grid-template-columns:1fr;gap:12px}}
