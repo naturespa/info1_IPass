@@ -7,5 +7,6 @@ export const teacherStore={
  roster:()=>run('roster','readonly',s=>s.getAll()),
  saveRecords:rows=>run('records','readwrite',s=>{for(const row of rows)s.put(row);}),
  saveRoster:rows=>run('roster','readwrite',s=>{s.clear();for(const row of rows)s.put(row);}),
+ restore:async data=>{const db=await database();return new Promise((resolve,reject)=>{const tx=db.transaction(['records','roster'],'readwrite');for(const key of ['records','roster']){const s=tx.objectStore(key);s.clear();for(const row of data[key])s.put(row);}tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});},
  clearRecords:()=>run('records','readwrite',s=>s.clear())
 };

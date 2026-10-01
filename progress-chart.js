@@ -6,7 +6,7 @@ export function drawProgressChart(target,records,visible=new Set(labels)){
  const ticks=[1,2,3,4,5].map(n=>'<text x="'+x(n)+'" y="'+(h-16)+'" text-anchor="middle" font-size="12" fill="#53677a">第'+n+'回</text>').join('');
  const series=labels.map((label,i)=>{
   if(!visible.has(label))return '';
-  const points=records.map(a=>({round:a.round,rate:i===0?a.result.score:a.result.byDomain.find(d=>d.domain===label)?.rate})).filter(p=>p.rate!=null&&p.round<=5);
+  const points=[...records].sort((a,b)=>a.round-b.round).map(a=>({round:a.round,rate:i===0?a.result.score:a.result.byDomain.find(d=>d.domain===label)?.rate})).filter(p=>p.rate!=null&&p.round<=5);
   const line=points.length>1?'<polyline points="'+points.map(p=>x(p.round)+','+y(p.rate)).join(' ')+'" fill="none" stroke="'+colors[i]+'" stroke-width="'+(i===0?3:2)+'" '+(i===0?'':'stroke-dasharray="'+(i*2+2)+' 3"')+' />':'';
   return line+points.map(p=>'<circle cx="'+x(p.round)+'" cy="'+y(p.rate)+'" r="5" fill="'+colors[i]+'" stroke="white" stroke-width="1.5"><title>'+label+' 第'+p.round+'回 '+p.rate+'%</title></circle>').join('');
  }).join('');

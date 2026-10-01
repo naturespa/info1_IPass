@@ -1,0 +1,5 @@
+import {createHmac,timingSafeEqual} from 'node:crypto';
+import {isUuid} from '../progress.js';
+import {validStudent} from '../core.js';
+export function issueCorrection(payload,key){if(payload.app!=='info1_IPass'||payload.kind!=='correction'||payload.schemaVersion!==1||!isUuid(payload.correctionId)||!isUuid(payload.attemptId)||!validStudent(payload.studentCode,payload.studentName)||payload.action!=='cancel'||typeof payload.reason!=='string'||!payload.reason.trim()||payload.reason.length>500||!Number.isFinite(Date.parse(payload.issuedAt)))throw new Error('修正内容が不正です。');return {payload,signature:createHmac('sha256',key).update(JSON.stringify(payload)).digest('hex')};}
+export function verifyCorrection(token,key){const signed=issueCorrection(token?.payload??{},key);if(typeof token.signature!=='string'||!/^[0-9a-f]{64}$/.test(token.signature)||!timingSafeEqual(Buffer.from(token.signature,'hex'),Buffer.from(signed.signature,'hex')))throw new Error('教員が発行した修正ファイルではありません。');return token.payload;}
