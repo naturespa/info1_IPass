@@ -645,3 +645,7 @@ body.exam-locked footer {
 .status-screen #comparison-group{display:block;width:100%;max-width:520px;margin:8px 0;padding:12px;border:1px solid #becbd5;border-radius:8px;background:white;color:#17263c;font:inherit}
 
 #save-state{max-width:1180px;margin:12px auto;padding:10px 16px;font-size:14px;}
+
+.page-navigation{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0;padding:8px 0}.page-navigation a{display:inline-flex;align-items:center;text-decoration:none}.cbt>.page-navigation{padding:12px 16px;margin:0;background:var(--cbt-bg)}@media print{.page-navigation{display:none}}
+
+.exam-focus-overlay{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:24px;background:#17263ce8}.exam-focus-overlay>.admin-card{max-width:620px;width:100%}html:fullscreen{overflow:auto;background:#eef1f4}
