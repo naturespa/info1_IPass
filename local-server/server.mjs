@@ -35,7 +35,12 @@ const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=
 const server=http.createServer(async(req,res)=>{
  res.setHeader('X-Content-Type-Options','nosniff');const reply=(status,value)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
  try{
+  if(req.headers['content-encoding']&&req.headers['content-encoding'].toLowerCase()!=='identity')return reply(415,{error:'圧縮されたリクエストは受け付けません。'});
   const u=new URL(req.url,'http://localhost'),decoded=decodeURIComponent(u.pathname);if(decoded.includes('\\')||decoded.includes('\0'))return reply(400,{error:'Invalid path'});const pathname=path.posix.normalize(decoded);
+  // Windowsの大文字小文字・末尾ドット・代替データストリームによる別名アクセスを拒否。
+  const lowerPath=pathname.toLowerCase();
+  if(pathname.split('/').some(p=>/[. :]$/.test(p)||p.includes(':')))return reply(403,{error:'Forbidden'});
+  if(pathname!==lowerPath&&(lowerPath.startsWith('/api/')||teacherPages.has(lowerPath)||teacherScripts.has(lowerPath)))return reply(403,{error:'Forbidden'});
   if(pathname.startsWith('/api/admin/')||pathname.startsWith('/api/teacher-auth/')||teacherPages.has(pathname)||teacherScripts.has(pathname)){
    const local=['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress)&&/^(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/.test(req.headers.host||'');
    if(!local)return reply(403,{error:'管理画面はサーバPCでのみ利用できます。'});
@@ -100,7 +105,7 @@ const server=http.createServer(async(req,res)=>{
   if(pathname.startsWith('/api/'))return reply(404,{error:'Not found'});
   if(req.method!=='GET'&&req.method!=='HEAD')return reply(405,{error:'GET required'});
   const file=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));const relative=path.relative(root,file);
-  if(relative.startsWith('..')||path.isAbsolute(relative)||relative.split(path.sep).some(p=>p.startsWith('.'))||relative.startsWith('local-server')||relative.startsWith('scripts')||relative.startsWith('tests'))return reply(403,{error:'Forbidden'});
+  if(relative.startsWith('..')||path.isAbsolute(relative)||relative.split(path.sep).some(p=>p.startsWith('.'))||/^(local-server|scripts|tests|node_modules)(?:[\\/]|$)/i.test(relative))return reply(403,{error:'Forbidden'});
   const ext=path.extname(file);if(!types[ext])return reply(403,{error:'Forbidden'});
   const content=await readFile(file);res.writeHead(200,{'Content-Type':types[ext],'Cache-Control':teacherPages.has(pathname)||teacherScripts.has(pathname)?'no-store':ext==='.html'?'no-cache':'public, max-age=300'});res.end(req.method==='HEAD'?undefined:content);
  }catch(e){if(e.code==='ENOENT')return reply(404,{error:'Not found'});console.error(e.name,e.message);reply(500,{error:'Server error'});}
