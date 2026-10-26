@@ -1,4 +1,5 @@
 const main=document.querySelector('main'),module=document.querySelector('script[data-teacher-module]')?.dataset.teacherModule;
+main.dataset.teacherContent='true';
 const notice=document.createElement('main');notice.className='admin-shell';notice.innerHTML='<h1>教員用画面</h1><p role="status">教員ログインを確認しています。</p><nav class="page-navigation" aria-label="ページ移動"><a class="secondary" href="index.html">表紙に戻る</a><a class="secondary" href="teacher-login.html">教員ログインへ</a></nav>';document.body.prepend(notice);
 const lock=()=>{main.hidden=true;location.replace('teacher-login.html?next='+encodeURIComponent('/'+location.pathname.split('/').at(-1)));};
 let checking=false;async function checkSession(){if(checking)return;checking=true;try{const r=await fetch('api/teacher-auth/status',{credentials:'same-origin',cache:'no-store'});if(!r.ok||(await r.json()).authenticated!==true)lock();}catch{lock();}finally{checking=false;}}

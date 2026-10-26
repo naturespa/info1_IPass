@@ -23,7 +23,7 @@ export function createGradeScope({classId,onChange}){
  if(!cs){cs=document.createElement('select');const l=document.createElement('label');l.textContent='クラス ';l.append(cs);fields.append(l);}else{const l=cs.closest('label');if(l)fields.append(l);}
  cs.setAttribute('aria-label','対象クラス');
  const note=document.createElement('p');note.className='hint';note.setAttribute('role','status');box.append(note);
- const main=document.querySelector('main');main.querySelector('h1').insertAdjacentElement('afterend',box);
+ const main=document.querySelector('main[data-teacher-content]')??document.querySelector('main[hidden]')??document.querySelector('main');main.querySelector('h1').insertAdjacentElement('afterend',box);
  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}}
  function changed(){save();onChange?.();}
  function refresh(){
