@@ -672,3 +672,5 @@ body.exam-locked footer {
 .submission-history{margin:0;line-height:1.8;overflow-wrap:anywhere}
 .submission-success-badge{display:inline-block;margin:0 8px 4px 0;padding:3px 9px;border-radius:5px;background:#dcfce7;color:#14532d;border:1px solid #86b99a;font-size:13px;font-weight:700}
 @media(max-width:700px){.submission-layout{grid-template-columns:1fr;gap:12px}}
+
+.image-load-error{position:absolute;inset:0;margin:0;padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#fff;color:#a3261b;font-size:14px;mix-blend-mode:normal}

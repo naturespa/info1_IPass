@@ -1,3 +1,4 @@
+import {questionImage,installQuestionImages} from './question-images.js';
 import {createExamFullscreen} from './exam-fullscreen.js';
 import {reviewPlan,reviewHtml} from './review.js';
 import {isChallenge,isCancelled,roundLabel} from './progress.js';
@@ -12,6 +13,7 @@ let catalog,bank=[],session=null,phase='entry',reviewFilter='wrong',busy=false;
 let view={bg:'#fffdf4',ink:'#17263c',zoom:100};
 let downloaded=new Map(), confirmAction=null,archive=false,reviewMetadata={questions:{}},reviewTopicIds=null;
 window.addEventListener('ipass-storage',e=>{const x=document.getElementById('save-state');x.textContent=e.detail.ok?'保存済み：'+new Date(e.detail.at).toLocaleTimeString('ja-JP'):e.detail.message;x.classList.toggle('error',!e.detail.ok);});
+installQuestionImages(document);
 const store=new StudentStore();try{localStorage.setItem('ipass:storage-check','1');localStorage.removeItem('ipass:storage-check');$('save-state').textContent='ブラウザ保存が利用できます。';}catch{$('save-state').textContent='ブラウザ保存を利用できません。';}
 const fullscreen=createExamFullscreen({doc:document,getSession:()=>session,onLock(locked,reason){$('app').inert=locked;$('exam-focus-overlay').hidden=!locked;if(locked){if($('confirm').open)$('confirm').close();confirmAction=null;$('exam-focus-message').textContent=reason==='fullscreen-exit'?'全画面表示が解除されました。全画面に戻って受験を続けてください。':'受験画面から離れました。全画面に戻って受験を続けてください。';$('exam-fullscreen-return').focus();}},onEvent(reason){if(session){(session.fullscreenEvents??=[]).push({type:reason,at:new Date().toISOString()});session.fullscreenEvents=session.fullscreenEvents.slice(-1000);persist();}}});
 $('exam-fullscreen-return').onclick=async()=>{if(expired())return;try{await fullscreen.enter(session);}catch(e){$('exam-focus-message').textContent=e.message;}};
@@ -38,7 +40,7 @@ $('cancel').onclick=()=>{$('confirm').close();confirmAction=null;};$('confirm-ok
 function screen(next){phase=next;if(next==='entry')refreshResumeBox();$('entry').hidden=next!=='entry';$('exam').hidden=['entry','status'].includes(next);$('status-screen').hidden=next!=='status';$('timer-box').hidden=!['running','list'].includes(next);$('phase-label').textContent=({guide:'操作説明',ready:'受験開始',running:'問題表示',list:'解答一覧',done:'試験結果'})[next]??'';if(session){$('who-code').textContent=session.studentCode;$('who-name').textContent=session.studentName;}render();if(['running','list'].includes(next))fullscreen.check();window.scrollTo({top:0,behavior:'instant'});}
 function choices(){return bank.filter(q=>session.questionIds.includes(q.id)).sort((a,b)=>session.questionIds.indexOf(a.id)-session.questionIds.indexOf(b.id));}
 function button(label,id,cls='cbt-nav',disabled=false){return `<button type="button" id="${id}" class="${cls}" ${disabled?'disabled':''}>${label}</button>`;}
-function image(q,lazy=false){const height=reviewMetadata.questions[q.id]?.displayHeight??q.image.height;return `<div class="q-image" style="aspect-ratio:${q.image.width}/${height}"><img src="${q.image.src}" style="top:-${q.image.y/height*100}%" alt="${esc(q.source)}の問題文・図表・選択肢" ${lazy?'loading="lazy"':''} onerror="this.closest('.q-image').outerHTML='<p class=error>問題画像を読み込めません。再読み込みまたは先生に確認してください。</p>'"></div>`;}
+function image(q,deferred=false){return questionImage(q,{displayHeight:reviewMetadata.questions[q.id]?.displayHeight??q.image.height,deferred});}
 function foot(items){return `<nav class="cbt-foot" aria-label="問題移動">${items.join('')}</nav>`;}
 $('references').onclick=()=>{const q=choices()[session.index],e=catalog.exams.find(e=>e.id===q.examId);dialog(`${e.label} 参考資料`,`<p>資料を開いている間も試験時間は進みます。</p><div class="reference-pages">${e.references.map((src,i)=>`<img src="${src}" alt="${esc(e.label)} 参考資料 ${i+1}ページ" loading="lazy">`).join('')}</div>`,null,'閉じる');};
 const guides=[['画面と時間について','画面上部に現在時刻・受験番号・氏名・残り時間を表示します。時間が0になると自動で採点します。ページを閉じても残り時間は進みます。'],['画面の見え方を変える','白黒反転・背景色・文字色・表示倍率を変更できます。問題はIPAの原本画像です。文字や図表が小さいときは表示倍率を上げてください。'],['解答と見直し','原本の選択肢を読み、その下のア・イ・ウ・エを選びます。解答は変更できます。「後で見直す」を付けると、解答一覧に印が付きます。'],['提出と結果','解答一覧から提出します。未解答は不正解として採点します。終了後、分野別の正答率と正解を確認し、結果JSONをダウンロードして提出してください。']];
