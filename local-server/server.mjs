@@ -35,7 +35,7 @@ function checkedReport(r,code){if(!r||!isUuid(r.reportId)||r.studentCode!==code|
 function validateCorrections(p,key=correctionKey()){for(const a of p.attempts)if(isCancelled(a)){const c=verifyCorrection(a.correction??a.result?.correction,key);if(c.attemptId!==a.attemptId||c.studentCode!==a.studentCode||normalizeName(c.studentName)!==normalizeName(a.studentName))throw new Error('修正の対象が一致しません。');}}
 const catalog=JSON.parse(await readFile(path.join(root,'data/catalog.json'),'utf8'));const bank=new Map();
 for(const e of catalog.exams){const b=JSON.parse(await readFile(path.join(root,'data',e.id+'.json'),'utf8'));for(const q of b.questions)bank.set(q.id,q);}
-const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml','.webp':'image/webp'};
+const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml','.webp':'image/webp','.png':'image/png'};
 const server=http.createServer(async(req,res)=>{
  res.setHeader('X-Content-Type-Options','nosniff');const reply=(status,value)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
  try{

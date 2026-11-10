@@ -1,4 +1,4 @@
-import {questionImage,installQuestionImages} from './question-images.js';
+import {questionImage,installQuestionImages} from './question-images.js?v=20261110-png';
 import {createExamFullscreen} from './exam-fullscreen.js';
 import {reviewPlan,reviewHtml} from './review.js';
 import {isChallenge,isCancelled,roundLabel} from './progress.js';
