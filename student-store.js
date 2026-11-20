@@ -1,4 +1,4 @@
-import {previousQuestionIds} from './draw.js';
+import {DRAW_ALGORITHM,practiceOverlapTarget,previousQuestionIds} from './draw.js?v=20261120-challenge';
 import {normalizeName} from './core.js';
 import {MAX_ATTEMPTS,attemptsFor,attemptFromSession,mergeAttempts,progressPacket,isChallenge,isCancelled,attemptKind} from './progress.js';
 const LEDGER='ipass:attempts:v2',ACTIVE='ipass:active:v1';
@@ -12,7 +12,36 @@ export class StudentStore {
  challengeFor(code){return this.forStudent(code).filter(a=>isChallenge(a)&&!isCancelled(a));}
  nextRound(code,settings){if(isChallenge({settings})){const used=new Set(this.challengeFor(code).map(a=>a.round));return [1,2,3,4,5].find(n=>!used.has(n))??6;}return this.forStudent(code).filter(a=>attemptKind(a)===attemptKind({settings})).reduce((max,a)=>Math.max(max,a.round),0)+1;}
  checkName(code,name){const existing=this.forStudent(code)[0];if(existing&&normalizeName(existing.studentName)!==normalizeName(name))throw new Error('この受験番号には別の氏名の記録があります。番号・氏名を確認してください。');}
- async start(s){const start=()=>{if(this.error)throw new Error(this.error);this.checkName(s.studentCode,s.studentName);const records=this.forStudent(s.studentCode),challenge=isChallenge(s),round=this.nextRound(s.studentCode,s.settings);if(challenge&&round>MAX_ATTEMPTS)throw new Error('本チャレンジ5回を使い切りました。練習は引き続き無制限で利用できます。');if(records.some(a=>a.status==='running'&&!isCancelled(a)&&a.attemptId!==s.attemptId))throw new Error('受験中の記録があります。ステータスから再開してください。');if(records.some(a=>a.attemptId===s.attemptId))throw new Error('この試験は開始済みです。続きから再開してください。');const drawing=s.settings?.drawing;if(drawing?.algorithm&&(drawing.studentCode!==s.studentCode||drawing.round!==round))throw new Error('受験履歴が変更されました。表紙から問題を準備し直してください。');if(challenge&&drawing?.algorithm){const used=new Set(this.challengeFor(s.studentCode).flatMap(a=>a.result?.answers?.map(x=>x.id)??a.session?.questionIds??[]));const practiced=new Set(previousQuestionIds(records.filter(a=>!isChallenge(a))));if(s.questionIds.filter(id=>practiced.has(id)).length>Math.floor(s.questionIds.length*.15))throw new Error('練習履歴が変更されました。15%上限を守るため、表紙から問題を準備し直してください。');if(s.questionIds.some(id=>used.has(id)))throw new Error('準備後に履歴が変更されました。問題を準備し直してください。');}const next={...s,round,startedAt:new Date().toISOString(),deadline:Date.now()+s.minutes*60000};this.record(next);localStorage.setItem(ACTIVE,JSON.stringify(next));return next;};return navigator.locks?navigator.locks.request('ipass:start:'+s.studentCode,start):start();}
+ async start(s){
+  const start=()=>{
+   if(this.error)throw new Error(this.error);
+   this.checkName(s.studentCode,s.studentName);
+   const records=this.forStudent(s.studentCode),challenge=isChallenge(s),round=this.nextRound(s.studentCode,s.settings);
+   if(challenge&&round>MAX_ATTEMPTS)throw new Error('本チャレンジ5回を使い切りました。練習は引き続き無制限で利用できます。');
+   if(records.some(a=>a.status==='running'&&!isCancelled(a)&&a.attemptId!==s.attemptId))throw new Error('受験中の記録があります。ステータスから再開してください。');
+   if(records.some(a=>a.attemptId===s.attemptId))throw new Error('この試験は開始済みです。続きから再開してください。');
+   const drawing=s.settings?.drawing;
+   if(drawing?.algorithm&&(drawing.studentCode!==s.studentCode||drawing.round!==round))throw new Error('受験履歴が変更されました。表紙から問題を準備し直してください。');
+   if(challenge&&drawing?.algorithm){
+    const used=new Set(previousQuestionIds(records.filter(isChallenge)));
+    const practiced=new Set(previousQuestionIds(records.filter(a=>!isChallenge(a))));
+    const overlap=s.questionIds.filter(id=>practiced.has(id));
+    const target=practiceOverlapTarget(s.questionIds.length);
+    if(drawing.algorithm===DRAW_ALGORITHM){
+     const expected=new Set(drawing.practiceOverlapQuestionIds);
+     if(expected.size!==overlap.length||overlap.some(id=>!expected.has(id)))throw new Error('練習履歴が変更されました。表紙から問題を準備し直してください。');
+    }else if(overlap.length>target){
+     throw new Error('練習履歴が変更されました。表紙から問題を準備し直してください。');
+    }
+    if(s.questionIds.some(id=>used.has(id)))throw new Error('準備後に履歴が変更されました。問題を準備し直してください。');
+   }
+   const next={...s,round,startedAt:new Date().toISOString(),deadline:Date.now()+s.minutes*60000};
+   this.record(next);
+   localStorage.setItem(ACTIVE,JSON.stringify(next));
+   return next;
+  };
+  return navigator.locks?navigator.locks.request('ipass:start:'+s.studentCode,start):start();
+ }
  record(s){if(s?.startedAt)this.write(mergeAttempts(this.all(),[attemptFromSession(s)]));}
  applyCorrection(token){const c=token.payload,records=this.all(),a=records.find(r=>r.attemptId===c.attemptId&&r.studentCode===c.studentCode);if(!a)throw new Error('対象の受験記録がこのブラウザにありません。');if(normalizeName(a.studentName)!==normalizeName(c.studentName))throw new Error('氏名が一致しません。');if(isCancelled(a))return false;a.cancelled=true;a.correction=token;if(a.result)a.result={...a.result,cancelled:true,correction:token};this.write(records);const active=read(ACTIVE,null);if(active?.attemptId===a.attemptId)localStorage.removeItem(ACTIVE);return true;}
  packet(code,name){return {...progressPacket(this.all(),code,name),reports:read('ipass:reports:v1',[]).filter(r=>r.studentCode===code)};}
